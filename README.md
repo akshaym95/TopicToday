@@ -8,6 +8,7 @@ A Flask-based REST API that provides personalized news feeds and motivational qu
 - **📰 Personalized News Feed** - News articles based on user-selected topics
 - **💬 Motivational Quotes** - Daily inspirational quotes
 - **⚙️ User Preference Management** - Customizable topic preferences
+- **👤 User Profile Management** - Update username, phone number, and password
 - **🏥 Health Check Endpoint** - API status monitoring
 - **📚 Interactive API Documentation** - Swagger UI integration
 - **🛡️ Security** - Password hashing, JWT tokens, input validation
@@ -34,13 +35,20 @@ All endpoints are prefixed with `/api/` and documented with Swagger UI at `/api/
 |--------|----------|-------------|---------------|
 | `POST` | `/api/auth/register` | User registration | No |
 | `POST` | `/api/auth/login` | User login | No |
-| `GET` | `/api/auth/profile` | Get user profile | Yes |
+
+### 👤 User Management Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/user/profile` | Get user profile | Yes |
+| `PUT` | `/api/user/profile` | Update user profile | Yes |
+| `GET` | `/api/user/preferences` | Get user preferences | Yes |
+| `PUT` | `/api/user/preferences` | Update user preferences | Yes |
 
 ### 📊 Dashboard Endpoints
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `PUT` | `/api/dashboard/preferences` | Update user topics | Yes |
 | `GET` | `/api/dashboard/feed` | Get personalized feed | Yes |
 
 ### 🏥 Health Endpoints
@@ -89,6 +97,32 @@ python run.py
 - **API Documentation**: http://localhost:5001/api/docs/
 - **Health Check**: http://localhost:5001/api/health
 - **Base URL**: http://localhost:5001/api/
+
+### 🧪 Testing with Postman
+
+Ready-to-use Postman collections are included for easy API testing:
+
+1. **Import the Collection**: 
+   - Open Postman
+   - Import `TopicToday_API.postman_collection.json`
+   - Import `TopicToday_Environment.postman_environment.json`
+
+2. **Set up Environment**:
+   - Select "TopicToday Environment" from the environment dropdown
+   - The collection uses variables like `{{base_url}}`, `{{access_token}}`, etc.
+
+3. **Test the API**:
+   - Start with "Health Check" to verify the API is running
+   - Register a new user to get an access token
+   - The token is automatically saved and used for authenticated requests
+   - Test all endpoints with pre-configured examples
+
+**Collection Features:**
+- ✅ All API endpoints with examples
+- ✅ Automatic token management
+- ✅ Pre-configured request bodies
+- ✅ Success and error response examples
+- ✅ Environment variables for easy configuration
 
 ## 📖 API Usage Examples
 
@@ -145,9 +179,11 @@ Content-Type: application/json
 }
 ```
 
+### 👤 User Management
+
 #### Get User Profile
 ```http
-GET /api/auth/profile
+GET /api/user/profile
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -162,11 +198,53 @@ Authorization: Bearer <your-jwt-token>
 }
 ```
 
-### 📊 Dashboard Operations
+#### Update User Profile
+```http
+PUT /api/user/profile
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "username": "new_username",
+  "phone_number": "+1987654321",
+  "password": "newpassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Profile updated successfully",
+  "user": {
+    "id": 1,
+    "username": "new_username",
+    "phone_number": "+1987654321",
+    "preferred_topics": ["technology", "health"],
+    "created_at": "2024-01-01T00:00:00"
+  }
+}
+```
+
+#### Get User Preferences
+```http
+GET /api/user/preferences
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "username": "testuser",
+  "phone_number": "+1234567890",
+  "preferred_topics": ["technology", "health", "sports", "business"],
+  "created_at": "2024-01-01T00:00:00"
+}
+```
 
 #### Update User Preferences
 ```http
-PUT /api/dashboard/preferences
+PUT /api/user/preferences
 Authorization: Bearer <your-jwt-token>
 Content-Type: application/json
 
@@ -182,6 +260,8 @@ Content-Type: application/json
   "topics": ["technology", "health", "sports", "business"]
 }
 ```
+
+### 📊 Dashboard Operations
 
 #### Get Personalized Feed
 ```http
