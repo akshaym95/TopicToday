@@ -31,10 +31,6 @@ class BaseConfig:
     GNEWS_MAX_ARTICLES = 5
     GNEWS_LANGUAGE = 'en'
     
-    ZENQUOTES_API_KEY = os.environ.get('ZENQUOTES_API_KEY') or '1234567890'
-    ZENQUOTES_BASE_URL = 'https://zenquotes.io/api'
-    ZENQUOTES_DEFAULT_COUNT = 3
-    
     # Application Settings
     APP_NAME = 'TopicToday'
     APP_VERSION = '1.0.0'
@@ -134,7 +130,4 @@ def get_config(config_name=None):
     
     return config_class
 
-# Legacy Config class for backward compatibility
-class Config(BaseConfig):
-    """Legacy configuration class - kept for backward compatibility"""
-    pass
+ZENQUOTES_BASE_URL = 'https://zenquotes.io/api'

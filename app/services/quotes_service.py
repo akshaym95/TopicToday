@@ -1,17 +1,17 @@
 import requests
-import os
 from typing import List, Dict
+from config import ZENQUOTES_BASE_URL
 
 class QuotesService:
     """Service for fetching motivational quotes from ZenQuotes API"""
     
     def __init__(self):
-        self.base_url = 'https://zenquotes.io/api'
+        self.base_url = ZENQUOTES_BASE_URL
     
-    def get_random_quotes(self, count: int = 3) -> List[Dict]:
-        """Fetch random motivational quotes"""
+    def get_qoute_of_the_day(self) -> List[Dict]:
+        """Fetch motivational quotes of the day"""
         try:
-            url = f"{self.base_url}/random"
+            url = f"{self.base_url}/today"
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             
@@ -19,10 +19,10 @@ class QuotesService:
             
             # ZenQuotes returns a list of quotes
             quotes = []
-            for quote_data in data[:count]:
-                quotes.append({
-                    'quote': quote_data.get('q', ''),
-                    'author': quote_data.get('a', 'Unknown'),
+            qoute = data[0]
+            quotes.append({
+                    'quote': qoute.get('q', ''),
+                    'author': qoute.get('a', 'Unknown'),
                     'source': 'ZenQuotes'
                 })
             
@@ -30,26 +30,16 @@ class QuotesService:
             
         except requests.RequestException as e:
             print(f"Error fetching quotes: {e}")
-            return self._get_mock_quotes(count)
+            return self._get_mock_quotes()
     
-    def _get_mock_quotes(self, count: int) -> List[Dict]:
+    def _get_mock_quotes(self) -> List[Dict]:
         """Return mock quotes when API is unavailable"""
         mock_quotes = [
             {
                 'quote': 'The only way to do great work is to love what you do.',
                 'author': 'Steve Jobs',
                 'source': 'Mock Quotes'
-            },
-            {
-                'quote': 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
-                'author': 'Winston Churchill',
-                'source': 'Mock Quotes'
-            },
-            {
-                'quote': 'The future belongs to those who believe in the beauty of their dreams.',
-                'author': 'Eleanor Roosevelt',
-                'source': 'Mock Quotes'
             }
         ]
         
-        return mock_quotes[:count] 
+        return mock_quotes

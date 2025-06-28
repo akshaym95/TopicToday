@@ -74,7 +74,7 @@ class Feed(Resource):
         
         # Get motivational quotes
         try:
-            quotes = quotes_service.get_random_quotes(3)
+            quotes = quotes_service.get_qoute_of_the_day()
             feed['quotes'] = quotes
         except Exception as e:
             print(f"Error fetching quotes: {e}")
