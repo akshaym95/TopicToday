@@ -24,7 +24,7 @@ class NewsService:
                 'token': self.api_key,
                 'lang': 'en',
                 'country': 'in',
-                'max': 3,
+                'max': 2,
                 'sortby': 'publishedAt'
             }
             
