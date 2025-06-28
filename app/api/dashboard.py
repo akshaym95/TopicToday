@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import User
 from app.services.news_service import NewsService
 from app.services.quotes_service import QuotesService
+from app.services.user_service import UserService
 from app import db
 
 # Create namespace for dashboard operations
@@ -32,57 +33,9 @@ feed_model = dashboard_ns.model('Feed', {
     'user_topics': fields.List(fields.String, description='User preferred topics')
 })
 
-preferences_model = dashboard_ns.model('Preferences', {
-    'topics': fields.List(fields.String, required=True, description='List of preferred topics', example=['technology', 'health', 'sports'])
-})
-
-preferences_response_model = dashboard_ns.model('PreferencesResponse', {
-    'message': fields.String(description='Response message'),
-    'topics': fields.List(fields.String, description='Updated topics')
-})
-
 error_model = dashboard_ns.model('Error', {
     'error': fields.String(description='Error message')
 })
-
-@dashboard_ns.route('/preferences')
-class Preferences(Resource):
-    @dashboard_ns.doc(security='Bearer Auth')
-    @dashboard_ns.expect(preferences_model)
-    @dashboard_ns.response(200, 'Preferences updated successfully', preferences_response_model)
-    @dashboard_ns.response(400, 'Validation error', error_model)
-    @dashboard_ns.response(401, 'Unauthorized', error_model)
-    @dashboard_ns.response(404, 'User not found', error_model)
-    @dashboard_ns.response(500, 'Update failed', error_model)
-    @jwt_required()
-    def put(self):
-        """Update user's preferred topics"""
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-        
-        if not user:
-            dashboard_ns.abort(404, 'User not found')
-        
-        data = request.get_json()
-        
-        if 'topics' not in data:
-            dashboard_ns.abort(400, 'Topics field is required')
-        
-        # Validate topics
-        valid_topics = ['technology', 'health', 'sports', 'business', 'science', 'entertainment']
-        topics = [topic for topic in data['topics'] if topic in valid_topics]
-        
-        user.set_topics(topics)
-        
-        try:
-            db.session.commit()
-            return {
-                'message': 'Preferences updated successfully',
-                'topics': user.get_topics()
-            }, 200
-        except Exception as e:
-            db.session.rollback()
-            dashboard_ns.abort(500, 'Failed to update preferences')
 
 @dashboard_ns.route('/feed')
 class Feed(Resource):
@@ -94,10 +47,10 @@ class Feed(Resource):
     def get(self):
         """Get personalized feed with news and quotes"""
         current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-        
-        if not user:
-            dashboard_ns.abort(404, 'User not found')
+        user_or_error, status_code = UserService.get_user_by_id(current_user_id)
+        if status_code != 200:
+            dashboard_ns.abort(status_code, user_or_error.get('error', 'User not found'))
+        user = user_or_error
         
         topics = user.get_topics()
         

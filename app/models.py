@@ -7,7 +7,6 @@ class User(db.Model):
     """User model for authentication and preferences"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=True)
     phone_number = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -36,7 +35,6 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.username,
-            'email': self.email,
             'phone_number': self.phone_number,
             'preferred_topics': self.get_topics(),
             'created_at': self.created_at.isoformat()

@@ -66,21 +66,4 @@ class Login(Resource):
         if status_code >= 400:
             auth_ns.abort(status_code, result['error'])
         
-        return result, status_code
-
-@auth_ns.route('/profile')
-class Profile(Resource):
-    @auth_ns.doc(security='Bearer Auth')
-    @auth_ns.response(200, 'Profile retrieved successfully', user_model)
-    @auth_ns.response(401, 'Unauthorized', error_model)
-    @auth_ns.response(404, 'User not found', error_model)
-    @jwt_required()
-    def get(self):
-        """Get current user profile"""
-        current_user_id = get_jwt_identity()
-        result, status_code = AuthService.get_user_profile(current_user_id)
-        
-        if status_code >= 400:
-            auth_ns.abort(status_code, result['error'])
-        
         return result, status_code 
