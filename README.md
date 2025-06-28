@@ -34,7 +34,7 @@ A Flask-based REST API that provides personalized news feeds and motivational qu
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/topic-today.git
+it clone git@github.com:akshaym95/topic-today.git
 cd topic-today
 ```
 
