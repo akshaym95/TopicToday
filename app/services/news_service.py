@@ -1,17 +1,19 @@
 import requests
 import os
 from typing import List, Dict
+from config import GNEWS_BASE_URL, GNEWS_API_KEY
 
 class NewsService:
     """Service for fetching news from GNews API"""
     
     def __init__(self):
-        self.api_key = os.environ.get('GNEWS_API_KEY')
-        self.base_url = 'https://gnews.io/api/v4'
+        self.api_key = GNEWS_API_KEY
+        self.base_url = GNEWS_BASE_URL
     
-    def get_news_by_topic(self, topic: str, max_articles: int = 5) -> List[Dict]:
+    def get_news_by_topic(self, topic: str) -> List[Dict]:
         """Fetch news articles for a specific topic"""
         if not self.api_key:
+            print("no api key")
             # Return mock data if no API key
             return self._get_mock_news(topic)
         
@@ -20,8 +22,9 @@ class NewsService:
             params = {
                 'q': topic,
                 'token': self.api_key,
-                'max': max_articles,
                 'lang': 'en',
+                'country': 'in',
+                'max': 3,
                 'sortby': 'publishedAt'
             }
             
@@ -48,7 +51,8 @@ class NewsService:
             
         except requests.RequestException as e:
             print(f"Error fetching news for {topic}: {e}")
-            return self._get_mock_news(topic)
+            #return self._get_mock_news(topic)
+            return []
     
     def _get_mock_news(self, topic: str) -> List[Dict]:
         """Return mock news data when API is unavailable"""

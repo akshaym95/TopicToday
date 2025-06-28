@@ -25,11 +25,6 @@ class BaseConfig:
     JWT_ERROR_MESSAGE_KEY = 'message'
     JWT_ALGORITHM = 'HS256'  # Explicitly set algorithm
     
-    # External API Settings
-    GNEWS_API_KEY = os.environ.get('GNEWS_API_KEY') or '1234567890'
-    GNEWS_BASE_URL = 'https://gnews.io/api/v4'
-    GNEWS_MAX_ARTICLES = 5
-    GNEWS_LANGUAGE = 'en'
     
     # Application Settings
     APP_NAME = 'TopicToday'
@@ -131,3 +126,5 @@ def get_config(config_name=None):
     return config_class
 
 ZENQUOTES_BASE_URL = 'https://zenquotes.io/api'
+GNEWS_BASE_URL = 'https://gnews.io/api/v4'
+GNEWS_API_KEY = '5e694983d6c1a7a77bb7da7625369cf0'
