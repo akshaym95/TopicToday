@@ -4,7 +4,7 @@ from flask_restx import Api
 # Create API blueprint
 bp = Blueprint('api', __name__)
 
-# Initialize Flask-RESTX API
+# Initialize Flask-RESTX API with proper security configuration
 api = Api(
     bp,
     title='TopicToday API',
@@ -12,14 +12,14 @@ api = Api(
     description='A Flask-based API for personalized daily content aggregation',
     doc='/docs/',
     authorizations={
-        'apikey': {
+        'Bearer Auth': {
             'type': 'apiKey',
             'in': 'header',
             'name': 'Authorization',
             'description': "Type 'Bearer <JWT>' where JWT is the token"
         }
     },
-    security='apikey',
+    security='Bearer Auth',  # Set default security
     contact='TopicToday Team',
     contact_email='support@topictoday.com',
     contact_url='https://github.com/akshaym95/topic-today',

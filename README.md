@@ -11,100 +11,98 @@ A Flask-based REST API that provides personalized news feeds and motivational qu
 - **🏥 Health Check Endpoint** - API status monitoring
 - **📚 Interactive API Documentation** - Swagger UI integration
 - **🛡️ Security** - Password hashing, JWT tokens, input validation
+- **📊 Logging** - Comprehensive request and error logging
 
 ## 🛠 Tech Stack
 
-- **Backend Framework**: Flask 3.0.0
-- **API Documentation**: Flask-RESTX
-- **Authentication**: Flask-JWT-Extended
-- **Database ORM**: Flask-SQLAlchemy
-- **Database**: SQLite (development) / PostgreSQL (production)
-- **Environment Management**: python-dotenv
-- **HTTP Requests**: requests
-- **Password Security**: bcrypt
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Flask (Python) |
+| **API Documentation** | Flask-RESTX (Swagger/OpenAPI) |
+| **Authentication** | Flask-JWT-Extended |
+| **Database** | SQLite + SQLAlchemy |
+| **API Calls** | requests + external APIs (GNews, ZenQuotes) |
+| **Configuration** | python-dotenv for API keys & secrets |
 
-## 📋 Prerequisites
+## 📋 API Endpoints
 
-- Python 3.8 or higher
-- pip package manager
-- Git
+All endpoints are prefixed with `/api/` and documented with Swagger UI at `/api/docs/`.
 
-## 🚀 Getting Started
+### 🔐 Authentication Endpoints
 
-### 1. Clone the Repository
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/auth/register` | User registration | No |
+| `POST` | `/api/auth/login` | User login | No |
+| `GET` | `/api/auth/profile` | Get user profile | Yes |
 
+### 📊 Dashboard Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `PUT` | `/api/dashboard/preferences` | Update user topics | Yes |
+| `GET` | `/api/dashboard/feed` | Get personalized feed | Yes |
+
+### 🏥 Health Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/health` | API health status | No |
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.8+
+- pip
+
+### Installation
+
+1. **Clone the repository**
 ```bash
-it clone git@github.com:akshaym95/topic-today.git
+git clone https://github.com/yourusername/topic-today.git
 cd topic-today
 ```
 
-### 2. Set Up Virtual Environment
-
+2. **Create virtual environment**
 ```bash
-# Create virtual environment
 python -m venv venv
-
-# Activate virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
-
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Environment Configuration
-
-Create a `.env` file in the root directory:
-
-```env
-# Flask Configuration
-FLASK_ENV=development
-SECRET_KEY=your-super-secret-key-change-this-in-production
-JWT_SECRET_KEY=your-jwt-secret-key-change-this-in-production
-
-# External API Keys (Optional - app works with mock data without these)
-GNEWS_API_KEY=your-gnews-api-key
-ZENQUOTES_API_KEY=your-zenquotes-api-key
-
-# Database (Optional - defaults to SQLite)
-DATABASE_URL=sqlite:///instance/topic_today.db
+4. **Set up environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your API keys
 ```
 
-### 5. Run the Application
-
+5. **Run the application**
 ```bash
 python run.py
 ```
 
-The API will be available at:
-- **API Base URL**: `http://localhost:5001`
-- **Interactive Documentation**: `http://localhost:5001/api/docs/`
-- **Health Check**: `http://localhost:5001/api/health`
+6. **Access the API**
+- **API Documentation**: http://localhost:5001/api/docs/
+- **Health Check**: http://localhost:5001/api/health
+- **Base URL**: http://localhost:5001/api/
 
-## 📚 API Documentation
+## 📖 API Usage Examples
 
-### Interactive Documentation
+### 🔐 Authentication
 
-Visit `http://localhost:5001/api/docs/` for the complete interactive API documentation with Swagger UI.
-
-### API Endpoints
-
-#### 🔐 Authentication Endpoints
-
-##### Register User
+#### Register User
 ```http
 POST /api/auth/register
 Content-Type: application/json
 
 {
-  "username": "john_doe",
+  "username": "testuser",
   "phone_number": "+1234567890",
-  "password": "securepassword123"
+  "password": "password123"
 }
 ```
 
@@ -115,22 +113,21 @@ Content-Type: application/json
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
   "user": {
     "id": 1,
-    "username": "john_doe",
+    "username": "testuser",
     "phone_number": "+1234567890",
-    "preferred_topics": [],
-    "created_at": "2024-01-01T00:00:00"
+    "preferred_topics": []
   }
 }
 ```
 
-##### Login User
+#### Login User
 ```http
 POST /api/auth/login
 Content-Type: application/json
 
 {
-  "username": "john_doe",
-  "password": "securepassword123"
+  "username": "testuser",
+  "password": "password123"
 }
 ```
 
@@ -141,15 +138,14 @@ Content-Type: application/json
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
   "user": {
     "id": 1,
-    "username": "john_doe",
+    "username": "testuser",
     "phone_number": "+1234567890",
-    "preferred_topics": ["technology", "health"],
-    "created_at": "2024-01-01T00:00:00"
+    "preferred_topics": ["technology", "health"]
   }
 }
 ```
 
-##### Get User Profile
+#### Get User Profile
 ```http
 GET /api/auth/profile
 Authorization: Bearer <your-jwt-token>
@@ -159,16 +155,16 @@ Authorization: Bearer <your-jwt-token>
 ```json
 {
   "id": 1,
-  "username": "john_doe",
+  "username": "testuser",
   "phone_number": "+1234567890",
   "preferred_topics": ["technology", "health"],
   "created_at": "2024-01-01T00:00:00"
 }
 ```
 
-#### 📊 Dashboard Endpoints
+### 📊 Dashboard Operations
 
-##### Update User Preferences
+#### Update User Preferences
 ```http
 PUT /api/dashboard/preferences
 Authorization: Bearer <your-jwt-token>
@@ -179,14 +175,6 @@ Content-Type: application/json
 }
 ```
 
-**Available Topics:**
-- `technology` - Tech news and innovations
-- `health` - Health and wellness
-- `sports` - Sports news and updates
-- `business` - Business and finance
-- `science` - Scientific discoveries
-- `entertainment` - Movies, music, celebrity news
-
 **Response:**
 ```json
 {
@@ -195,7 +183,7 @@ Content-Type: application/json
 }
 ```
 
-##### Get Personalized Feed
+#### Get Personalized Feed
 ```http
 GET /api/dashboard/feed
 Authorization: Bearer <your-jwt-token>
@@ -365,6 +353,26 @@ CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:create_app()"]
 
 ## 📁 Project Structure
 
+```
+topic-today/
+├── app/
+│   ├── __init__.py          # Flask app factory
+│   ├── models.py            # Database models
+│   ├── middleware.py        # Request logging middleware
+│   ├── api/                 # Flask-RESTX API endpoints
+│   │   ├── __init__.py      # API initialization
+│   │   ├── auth.py          # Authentication endpoints
+│   │   ├── dashboard.py     # Dashboard endpoints
+│   │   └── health.py        # Health check endpoint
+│   └── services/            # External API services
+│       ├── __init__.py
+│       ├── news_service.py  # GNews API integration
+│       └── quotes_service.py # ZenQuotes API integration
+├── config.py                # Configuration classes
+├── requirements.txt         # Python dependencies
+├── run.py                   # Application entry point
+└── README.md               # Project documentation
+```
 
 ## 🤝 Contributing
 

@@ -9,7 +9,7 @@ class BaseConfig:
     """Base configuration class with common settings"""
     
     # Flask Core Settings
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'xK8#mP9$vL2@nQ4*hR7&jW3^cF5!bN6'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dR9#kL5$mN2@pQ7*vB4&hJ8^wF3!tC6'
     DEBUG = False
     TESTING = False
     
@@ -18,11 +18,12 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False  # Set to True to see SQL queries in console
     
-    # JWT Settings
+    # JWT Settings - Use the same key for both
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'xK8#mP9$vL2@nQ4*hR7&jW3^cF5!bN6'
     JWT_ACCESS_TOKEN_EXPIRES = False  # For development, set to timedelta(hours=1) in production
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_ERROR_MESSAGE_KEY = 'message'
+    JWT_ALGORITHM = 'HS256'  # Explicitly set algorithm
     
     # External API Settings
     GNEWS_API_KEY = os.environ.get('GNEWS_API_KEY') or '1234567890'

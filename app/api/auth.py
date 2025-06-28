@@ -1,8 +1,7 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app.models import User
-from app import db
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.services.auth_service import AuthService
 
 # Create namespace for authentication
 auth_ns = Namespace('auth', description='Authentication operations')
@@ -46,41 +45,12 @@ class Register(Resource):
     def post(self):
         """Register a new user"""
         data = request.get_json()
+        result, status_code = AuthService.register_user(data)
         
-        # Validate required fields
-        if not all(k in data for k in ['username', 'phone_number', 'password']):
-            auth_ns.abort(400, 'Missing required fields')
+        if status_code >= 400:
+            auth_ns.abort(status_code, result['error'])
         
-        # Check if user already exists
-        if User.query.filter_by(username=data['username']).first():
-            auth_ns.abort(400, 'Username already exists')
-        
-        if User.query.filter_by(phone_number=data['phone_number']).first():
-            auth_ns.abort(400, 'Phone number already exists')
-        
-        # Create new user
-        user = User(
-            username=data['username'],
-            phone_number=data['phone_number']
-        )
-        user.set_password(data['password'])
-        
-        try:
-            db.session.add(user)
-            db.session.commit()
-            
-            # Create JWT token
-            access_token = create_access_token(identity=user.id)
-            
-            return {
-                'message': 'User registered successfully',
-                'access_token': access_token,
-                'user': user.to_dict()
-            }, 201
-            
-        except Exception as e:
-            db.session.rollback()
-            auth_ns.abort(500, 'Registration failed')
+        return result, status_code
 
 @auth_ns.route('/login')
 class Login(Resource):
@@ -91,28 +61,16 @@ class Login(Resource):
     def post(self):
         """Login user"""
         data = request.get_json()
+        result, status_code = AuthService.login_user(data)
         
-        if not all(k in data for k in ['username', 'password']):
-            auth_ns.abort(400, 'Missing username or password')
+        if status_code >= 400:
+            auth_ns.abort(status_code, result['error'])
         
-        # Find user by username
-        user = User.query.filter_by(username=data['username']).first()
-        
-        if user and user.check_password(data['password']):
-            # Create JWT token
-            access_token = create_access_token(identity=user.id)
-            
-            return {
-                'message': 'Login successful',
-                'access_token': access_token,
-                'user': user.to_dict()
-            }, 200
-        else:
-            auth_ns.abort(401, 'Invalid username or password')
+        return result, status_code
 
 @auth_ns.route('/profile')
 class Profile(Resource):
-    @auth_ns.doc(security='apikey')
+    @auth_ns.doc(security='Bearer Auth')
     @auth_ns.response(200, 'Profile retrieved successfully', user_model)
     @auth_ns.response(401, 'Unauthorized', error_model)
     @auth_ns.response(404, 'User not found', error_model)
@@ -120,9 +78,9 @@ class Profile(Resource):
     def get(self):
         """Get current user profile"""
         current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
+        result, status_code = AuthService.get_user_profile(current_user_id)
         
-        if not user:
-            auth_ns.abort(404, 'User not found')
+        if status_code >= 400:
+            auth_ns.abort(status_code, result['error'])
         
-        return user.to_dict(), 200 
+        return result, status_code 

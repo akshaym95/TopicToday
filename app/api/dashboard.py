@@ -47,7 +47,7 @@ error_model = dashboard_ns.model('Error', {
 
 @dashboard_ns.route('/preferences')
 class Preferences(Resource):
-    @dashboard_ns.doc(security='apikey')
+    @dashboard_ns.doc(security='Bearer Auth')
     @dashboard_ns.expect(preferences_model)
     @dashboard_ns.response(200, 'Preferences updated successfully', preferences_response_model)
     @dashboard_ns.response(400, 'Validation error', error_model)
@@ -86,7 +86,7 @@ class Preferences(Resource):
 
 @dashboard_ns.route('/feed')
 class Feed(Resource):
-    @dashboard_ns.doc(security='apikey')
+    @dashboard_ns.doc(security='Bearer Auth')
     @dashboard_ns.response(200, 'Feed retrieved successfully', feed_model)
     @dashboard_ns.response(401, 'Unauthorized', error_model)
     @dashboard_ns.response(404, 'User not found', error_model)
