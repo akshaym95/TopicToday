@@ -127,4 +127,4 @@ def get_config(config_name=None):
 
 ZENQUOTES_BASE_URL = 'https://zenquotes.io/api'
 GNEWS_BASE_URL = 'https://gnews.io/api/v4'
-GNEWS_API_KEY = '5e694983d6c1a7a77bb7da7625369cf0'
+GNEWS_API_KEY = os.environ.get('GNEWS_API_KEY')
